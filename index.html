@@ -227,7 +227,7 @@
 
     pdfjsLib.getDocument(url).promise.then(pdf => {
       pdfDoc = pdf;
-      pageCount = pdf.numPages;
+      pageCount = 40;
       document.getElementById('page-count').textContent = pageCount;
       renderPage(pageNum);
     });
@@ -288,3 +288,4 @@ document.getElementById('flip-right').addEventListener('click', () => {
 
 </body>
 </html>
+
