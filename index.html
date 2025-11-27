@@ -236,10 +236,6 @@
     <canvas id="pdf-render"></canvas>
   </div>
 
-  <div id="controls1">
-    <span>صفحه: <span id="page-num1"></span> / <span id="page-count1"></span></span>
-  </div>
-
   <script>
     const url = 'https://cdn.jsdelivr.net/gh/abolfazl-design/data-structure@main/4_5823503421721812383.pdf';
     let pdfDoc = null, pageNum = 1, pageCount = 0;
@@ -248,7 +244,7 @@
 
     pdfjsLib.getDocument(url).promise.then(pdf => {
       pdfDoc = pdf;
-      pageCount = 40;
+      pageCount = 48;
       document.getElementById('page-count').textContent = pageCount;
       renderPage(pageNum);
     });
