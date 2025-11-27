@@ -193,6 +193,22 @@
 
      .pdf-flip-overlay:hover {
        background: rgba(2, 155, 202, 0.07);
+		 #go-first {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 8px 14px;
+  font-size: 14px;
+  background: #0078D7;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}
+
+#go-first:hover {
+  background: #005fa3;
+}
     }
   </style>
 </head>
@@ -208,6 +224,11 @@
     </div>
     <div class="wave-hand" id="hand">👋</div>
   </div>
+	<div id="controls">
+  <span>صفحه: <span id="page-num"></span> / <span id="page-count"></span></span>
+  <br>
+  <button id="go-first">صفحه اول</button>
+</div>
 
   <div class="pdf-container">
   <div class="pdf-flip-overlay left" id="flip-left"></div>
@@ -215,8 +236,8 @@
     <canvas id="pdf-render"></canvas>
   </div>
 
-  <div id="controls">
-    <span>صفحه: <span id="page-num"></span> / <span id="page-count"></span></span>
+  <div id="controls1">
+    <span>صفحه: <span id="page-num1"></span> / <span id="page-count1"></span></span>
   </div>
 
   <script>
@@ -284,8 +305,13 @@ document.getElementById('flip-right').addEventListener('click', () => {
     renderPage(pageNum);
   }
 });
+
+document.getElementById('go-first').addEventListener('click', () => {
+  if (!pdfDoc) return;
+  pageNum = 1;
+  renderPage(pageNum);
+});
   </script>
 
 </body>
 </html>
-
