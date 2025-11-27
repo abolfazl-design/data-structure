@@ -12,33 +12,21 @@
       font-family: sans-serif;
     }
 
-    #pdf-book {
+    .pdf-container {
       position: relative;
       width: 95%;
-      max-width: 1000px;
-      height: auto;
+      max-width: 900px;
       margin: 220px auto 0 auto;
-      display: flex;
+      aspect-ratio: 16 / 9;
+      background: #fff;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       border-radius: 8px;
       overflow: hidden;
     }
 
-    .page-half {
-      width: 50%;
-      height: 100%;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .page-half.left:hover,
-    .page-half.right:hover {
-      background-color: rgba(2, 155, 202, 0.1);
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
+    .pdf-container canvas {
+      width: 100% !important;
+      height: 100% !important;
       display: block;
     }
 
@@ -178,13 +166,33 @@
         scale: 0.8;
         top: 80px;
       }
-      #pdf-book {
+      .pdf-container {
         width: 100%;
         margin-top: 150px;
       }
       #controls span {
         font-size: 18px;
       }
+    }
+	  .pdf-flip-overlay {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 50%;
+        cursor: pointer;
+        z-index: 5; 
+    }
+
+     .pdf-flip-overlay.left {
+       left: 0;
+    }
+
+     .pdf-flip-overlay.right {
+       right: 0;
+    }
+
+     .pdf-flip-overlay:hover {
+       background: rgba(2, 155, 202, 0.07);
     }
   </style>
 </head>
@@ -201,74 +209,40 @@
     <div class="wave-hand" id="hand">👋</div>
   </div>
 
-  <div id="pdf-book">
-    <div class="page-half left" id="page-left">
-      <canvas id="canvas-left"></canvas>
-    </div>
-    <div class="page-half right" id="page-right">
-      <canvas id="canvas-right"></canvas>
-    </div>
+  <div class="pdf-container">
+  <div class="pdf-flip-overlay left" id="flip-left"></div>
+  <div class="pdf-flip-overlay right" id="flip-right"></div>
+    <canvas id="pdf-render"></canvas>
   </div>
 
   <div id="controls">
     <span>صفحه: <span id="page-num"></span> / <span id="page-count"></span></span>
   </div>
 
-  <canvas id="pdf-render"></canvas>
-
   <script>
     const url = 'https://cdn.jsdelivr.net/gh/abolfazl-design/data-structure@main/4_5823503421721812383.pdf';
     let pdfDoc = null, pageNum = 1, pageCount = 0;
-    const canvasLeft = document.getElementById('canvas-left');
-    const canvasRight = document.getElementById('canvas-right');
-    const ctxLeft = canvasLeft.getContext('2d');
-    const ctxRight = canvasRight.getContext('2d');
+    const canvas = document.getElementById('pdf-render');
+    const ctx = canvas.getContext('2d');
 
     pdfjsLib.getDocument(url).promise.then(pdf => {
       pdfDoc = pdf;
       pageCount = pdf.numPages;
       document.getElementById('page-count').textContent = pageCount;
-      renderPages();
+      renderPage(pageNum);
     });
 
-    function renderPages() {
-      document.getElementById('page-num').textContent = pageNum;
-
-      pdfDoc.getPage(pageNum).then(page => {
+    function renderPage(num) {
+      pdfDoc.getPage(num).then(page => {
         const viewport = page.getViewport({ scale: 1.5 });
-        canvasLeft.height = viewport.height;
-        canvasLeft.width = viewport.width;
-        page.render({ canvasContext: ctxLeft, viewport: viewport });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({ canvasContext: ctx, viewport: viewport });
+        document.getElementById('page-num').textContent = num;
       });
-
-      if (pageNum + 1 <= pageCount) {
-        pdfDoc.getPage(pageNum + 1).then(page => {
-          const viewport = page.getViewport({ scale: 1.5 });
-          canvasRight.height = viewport.height;
-          canvasRight.width = viewport.width;
-          page.render({ canvasContext: ctxRight, viewport: viewport });
-        });
-      } else {
-        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-      }
     }
 
-    document.getElementById('page-left').addEventListener('click', () => {
-      if (pageNum > 1) {
-        pageNum -= 2;
-        if (pageNum < 1) pageNum = 1;
-        renderPages();
-      }
-    });
-
-    document.getElementById('page-right').addEventListener('click', () => {
-      if (pageNum + 2 <= pageCount) {
-        pageNum += 2;
-        renderPages();
-      }
-    });
-
-   document.getElementById('bot-face').addEventListener('click', () => {
+    document.getElementById('bot-face').addEventListener('click', () => {
       const left = document.getElementById('eye-left');
       const right = document.getElementById('eye-right');
       const mouth = document.getElementById('bot-mouth');
@@ -287,8 +261,30 @@
         mouth.classList.remove('open');
       }, 1000);
     });
+
+    setTimeout(() => {
+      const speech = document.getElementById('speech');
+      const hand = document.getElementById('hand');
+      if (speech) speech.style.display = 'none';
+      if (hand) hand.style.display = 'none';
+    }, 3500);
+	  
+    document.getElementById('flip-left').addEventListener('click', () => {
+  if (!pdfDoc) return;
+  if (pageNum > 1) {
+    pageNum -= 1;
+    renderPage(pageNum);
+  }
+});
+
+document.getElementById('flip-right').addEventListener('click', () => {
+  if (!pdfDoc) return;
+  if (pageNum < pageCount) {
+    pageNum += 1;
+    renderPage(pageNum);
+  }
+});
   </script>
 
 </body>
 </html>
-
