@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Data Structure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <style>
     body {
-      background: #f0f0f0;
+      background: #6A6969;
       margin: 0;
       font-family: sans-serif;
-		background-color: #606460;
     }
-  
 
     #pdf-book {
       position: relative;
-      width: 90%;
+      width: 95%;
       max-width: 1000px;
       height: auto;
       margin: 220px auto 0 auto;
@@ -81,8 +80,7 @@
       border: 3px solid #0078D7;
       border-top-left-radius: 18px;
       border-top-right-radius: 18px;
-      background: transparent;
-	  background-color: #FFFFFF; 
+      background-color: #ffffff;
       box-shadow: 0 0 8px #0078D7;
       font-size: 18px;
       text-align: center;
@@ -94,21 +92,21 @@
     .eye.blink {
       color: #FF0000;
       border-color: #FF0000;
-	  background-color: #FFFFFF;
       box-shadow: 0 0 8px #FF0000;
+      background-color: #ffffff;
     }
 
     .mouth {
+      position: relative;
       width: 60px;
       height: 30px;
       border: 3px solid #0078D7;
       border-bottom-left-radius: 30px;
       border-bottom-right-radius: 30px;
-      background: transparent;
+      background-color: #ffffff;
       box-shadow: 0 0 10px #0078D7;
       margin-top: 6px;
       transition: all 0.4s ease;
-	  background-color: #FFFFFF;
     }
 
     .mouth.open {
@@ -116,8 +114,8 @@
       height: 6px;
       border-radius: 3px;
       border-color: #FF0000;
-	  background-color: #FFFFFF;
       box-shadow: 0 0 6px #FF0000;
+      background-color: #ffffff;
     }
 
     @keyframes float {
@@ -128,8 +126,8 @@
 
     .speech-bubble {
       position: absolute;
-      bottom: -15px;       
-      left: 80px;         
+      top: 140%;     
+      left: 30px;   
       background: #ffffff;
       border: 2px solid #0078D7;
       border-radius: 12px;
@@ -144,14 +142,13 @@
     .speech-bubble::after {
       content: "";
       position: absolute;
-      top: 50%;
-      right: 100%;
-      margin-top: -6px;
+      top: -6px;
+      left: 20px;
       border-width: 8px;
       border-style: solid;
-      border-color: transparent #0078D7 transparent transparent;
+      border-color: #0078D7 transparent transparent transparent;
     }
-	  
+
     .wave-hand {
       position: absolute;
       top: -10px;
@@ -174,6 +171,20 @@
       85% { opacity: 1; }
       100% { opacity: 0; }
     }
+
+    @media (max-width: 600px) {
+      .bot {
+        scale: 0.8;
+        top: 80px;
+      }
+      #pdf-book {
+        width: 100%;
+        margin-top: 150px;
+      }
+      #controls span {
+        font-size: 18px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -183,10 +194,9 @@
       <div class="eye" id="eye-left"></div>
       <div class="eye" id="eye-right"></div>
     </div>
-    <div class="mouth" id="bot-mouth"></div>
-
-    <div class="speech-bubble" id="speech">Hi!</div>
-	  
+    <div class="mouth" id="bot-mouth">
+      <div class="speech-bubble" id="speech">Hi!</div>
+    </div>
     <div class="wave-hand" id="hand">👋</div>
   </div>
 
@@ -257,7 +267,7 @@
       }
     });
 
-    document.getElementById('bot-face').addEventListener('click', () => {
+   document.getElementById('bot-face').addEventListener('click', () => {
       const left = document.getElementById('eye-left');
       const right = document.getElementById('eye-right');
       const mouth = document.getElementById('bot-mouth');
