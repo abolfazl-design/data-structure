@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Structure</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <style>
+    body {
+      background: #f0f0f0;
+      margin: 0;
+      font-family: sans-serif;
+		background-color: #606460;
+    }
+  
+
+    #pdf-book {
+      position: relative;
+      width: 90%;
+      max-width: 1000px;
+      height: auto;
+      margin: 220px auto 0 auto;
+      display: flex;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .page-half {
+      width: 50%;
+      height: 100%;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .page-half.left:hover,
+    .page-half.right:hover {
+      background-color: rgba(2, 155, 202, 0.1);
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    #controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    #controls span {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .bot {
+      position: fixed;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: float 4s ease-in-out infinite;
+      z-index: 999;
+      cursor: pointer;
+      scale: 0.9375;
+    }
+
+    .eye-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .eye {
+      width: 36px;
+      height: 18px;
+      border: 3px solid #0078D7;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      background: transparent;
+	  background-color: #FFFFFF; 
+      box-shadow: 0 0 8px #0078D7;
+      font-size: 18px;
+      text-align: center;
+      line-height: 18px;
+      color: #0078D7;
+      transition: all 0.3s ease;
+    }
+
+    .eye.blink {
+      color: #FF0000;
+      border-color: #FF0000;
+	  background-color: #FFFFFF;
+      box-shadow: 0 0 8px #FF0000;
+    }
+
+    .mouth {
+      width: 60px;
+      height: 30px;
+      border: 3px solid #0078D7;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      background: transparent;
+      box-shadow: 0 0 10px #0078D7;
+      margin-top: 6px;
+      transition: all 0.4s ease;
+	  background-color: #FFFFFF;
+    }
+
+    .mouth.open {
+      width: 40px;
+      height: 6px;
+      border-radius: 3px;
+      border-color: #FF0000;
+	  background-color: #FFFFFF;
+      box-shadow: 0 0 6px #FF0000;
+    }
+
+    @keyframes float {
+      0%   { transform: translateX(-50%) translateY(0); }
+      50%  { transform: translateX(-50%) translateY(-10px); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+
+    .speech-bubble {
+      position: absolute;
+      bottom: -15px;       
+      left: 80px;         
+      background: #ffffff;
+      border: 2px solid #0078D7;
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-size: 16px;
+      color: #0078D7;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+      animation: fadeOut 2s forwards;
+      pointer-events: none;
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 100%;
+      margin-top: -6px;
+      border-width: 8px;
+      border-style: solid;
+      border-color: transparent #0078D7 transparent transparent;
+    }
+	  
+    .wave-hand {
+      position: absolute;
+      top: -10px;
+      left: -50px;
+      font-size: 28px;
+      animation: wave 1s infinite, fadeOut 2s forwards;
+      pointer-events: none;
+    }
+
+    @keyframes wave {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(18deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-18deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bot" id="bot-face">
+    <div class="eye-row">
+      <div class="eye" id="eye-left"></div>
+      <div class="eye" id="eye-right"></div>
+    </div>
+    <div class="mouth" id="bot-mouth"></div>
+
+    <div class="speech-bubble" id="speech">Hi!</div>
+	  
+    <div class="wave-hand" id="hand">👋</div>
+  </div>
+
+  <div id="pdf-book">
+    <div class="page-half left" id="page-left">
+      <canvas id="canvas-left"></canvas>
+    </div>
+    <div class="page-half right" id="page-right">
+      <canvas id="canvas-right"></canvas>
+    </div>
+  </div>
+
+  <div id="controls">
+    <span>صفحه: <span id="page-num"></span> / <span id="page-count"></span></span>
+  </div>
+
+  <canvas id="pdf-render"></canvas>
+
+  <script>
+    const url = 'https://raw.githubusercontent.com/pdf-association/pdf20examples/master/pdf20-utf8-test.pdf';
+    let pdfDoc = null, pageNum = 1, pageCount = 0;
+    const canvasLeft = document.getElementById('canvas-left');
+    const canvasRight = document.getElementById('canvas-right');
+    const ctxLeft = canvasLeft.getContext('2d');
+    const ctxRight = canvasRight.getContext('2d');
+
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      pdfDoc = pdf;
+      pageCount = pdf.numPages;
+      document.getElementById('page-count').textContent = pageCount;
+      renderPages();
+    });
+
+    function renderPages() {
+      document.getElementById('page-num').textContent = pageNum;
+
+      pdfDoc.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale: 1.5 });
+        canvasLeft.height = viewport.height;
+        canvasLeft.width = viewport.width;
+        page.render({ canvasContext: ctxLeft, viewport: viewport });
+      });
+
+      if (pageNum + 1 <= pageCount) {
+        pdfDoc.getPage(pageNum + 1).then(page => {
+          const viewport = page.getViewport({ scale: 1.5 });
+          canvasRight.height = viewport.height;
+          canvasRight.width = viewport.width;
+          page.render({ canvasContext: ctxRight, viewport: viewport });
+        });
+      } else {
+        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      }
+    }
+
+    document.getElementById('page-left').addEventListener('click', () => {
+      if (pageNum > 1) {
+        pageNum -= 2;
+        if (pageNum < 1) pageNum = 1;
+        renderPages();
+      }
+    });
+
+    document.getElementById('page-right').addEventListener('click', () => {
+      if (pageNum + 2 <= pageCount) {
+        pageNum += 2;
+        renderPages();
+      }
+    });
+
+    document.getElementById('bot-face').addEventListener('click', () => {
+      const left = document.getElementById('eye-left');
+      const right = document.getElementById('eye-right');
+      const mouth = document.getElementById('bot-mouth');
+
+      left.textContent = '>';
+      right.textContent = '<';
+      left.classList.add('blink');
+      right.classList.add('blink');
+      mouth.classList.add('open');
+
+      setTimeout(() => {
+        left.textContent = '';
+        right.textContent = '';
+        left.classList.remove('blink');
+        right.classList.remove('blink');
+        mouth.classList.remove('open');
+      }, 1000);
+    });
+  </script>
+
+</body>
+</html>
