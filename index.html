@@ -246,7 +246,7 @@
 
     pdfjsLib.getDocument(url).promise.then(pdf => {
       pdfDoc = pdf;
-      pageCount = pdf.numPages; // یا عدد ثابت اگر مطمئنی
+      pageCount = pdf.numPages;
       document.getElementById('page-count').textContent = pageCount;
       renderPage(pageNum);
     });
@@ -258,8 +258,12 @@
         const containerWidth = container.clientWidth;
         const scale = containerWidth / baseViewport.width;
         const viewport = page.getViewport({ scale });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = viewport.width * dpr;
+        canvas.height = viewport.height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
         page.render({ canvasContext: ctx, viewport }).promise.then(() => {
           document.getElementById('page-num').textContent = num;
         });
@@ -317,3 +321,4 @@ document.getElementById('flip-right').addEventListener('click', () => {
 
 </body>
 </html>
+
