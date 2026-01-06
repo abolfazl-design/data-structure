@@ -2,7 +2,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>Data Structure</title>
+  <title>Data Structure (Mobile + Bot)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <style>
@@ -14,12 +14,11 @@
 
     .pdf-container {
       position: relative;
-      width: 95%;
-      max-width: 900px;
-      margin: 220px auto 0 auto;
+      width: 100%;
+      margin-top: 220px;
       background: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.2);
+      border-radius: 6px;
       overflow: hidden;
     }
 
@@ -31,37 +30,46 @@
 
     #controls {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 10px;
+      left: 10px;
       z-index: 1000;
-    }
-
-    #controls span {
-      display: inline-block;
-      margin-top: 5px;
-      font-size: 14px;
+      font-size: 16px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
     }
 
     #go-first {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 14px;
+      margin-top: 6px;
+      padding: 6px 12px;
       font-size: 14px;
       background: #0078D7;
       color: #fff;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      box-shadow: 0 0 6px rgba(0,0,0,0.2);
     }
 
     #go-first:hover {
       background: #005fa3;
     }
 
+    .pdf-flip-overlay {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      cursor: pointer;
+      z-index: 5;
+    }
+    .pdf-flip-overlay.left { left: 0; }
+    .pdf-flip-overlay.right { right: 0; }
+
+    /* ربات */
     .bot {
       position: fixed;
-      top: 120px;
+      top: 80px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -70,13 +78,10 @@
       animation: float 4s ease-in-out infinite;
       z-index: 999;
       cursor: pointer;
-      scale: 0.9375;
+      scale: 0.9;
     }
 
-    .eye-row {
-      display: flex;
-      gap: 10px;
-    }
+    .eye-row { display: flex; gap: 10px; }
 
     .eye {
       width: 36px;
@@ -97,7 +102,6 @@
       color: #FF0000;
       border-color: #FF0000;
       box-shadow: 0 0 8px #FF0000;
-      background-color: #ffffff;
     }
 
     .mouth {
@@ -119,7 +123,6 @@
       border-radius: 3px;
       border-color: #FF0000;
       box-shadow: 0 0 6px #FF0000;
-      background-color: #ffffff;
     }
 
     @keyframes float {
@@ -141,17 +144,6 @@
       box-shadow: 0 0 8px rgba(0,0,0,0.2);
       animation: fadeOut 2s forwards;
       pointer-events: none;
-    }
-
-    .speech-bubble::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      right: 100%;
-      margin-top: -6px;
-      border-width: 8px;
-      border-style: solid;
-      border-color: transparent #0078D7 transparent transparent;
     }
 
     .wave-hand {
@@ -176,45 +168,11 @@
       85% { opacity: 1; }
       100% { opacity: 0; }
     }
-
-    @media (max-width: 600px) {
-      .bot {
-        scale: 0.8;
-        top: 80px;
-      }
-      .pdf-container {
-        width: 100%;
-        margin-top: 150px;
-      }
-      #controls span {
-        font-size: 18px;
-      }
-    }
-
-    .pdf-flip-overlay {
-      position: absolute;
-      top: 0;
-      height: 100%;
-      width: 50%;
-      cursor: pointer;
-      z-index: 5;
-    }
-
-    .pdf-flip-overlay.left {
-      left: 0;
-    }
-
-    .pdf-flip-overlay.right {
-      right: 0;
-    }
-
-    .pdf-flip-overlay:hover {
-      background: rgba(2, 155, 202, 0.07);
-    }
   </style>
 </head>
 <body>
 
+  <!-- ربات -->
   <div class="bot" id="bot-face">
     <div class="eye-row">
       <div class="eye" id="eye-left"></div>
@@ -226,14 +184,16 @@
     <div class="wave-hand" id="hand">👋</div>
   </div>
 
+  <!-- PDF -->
   <div class="pdf-container">
     <div class="pdf-flip-overlay left" id="flip-left"></div>
     <div class="pdf-flip-overlay right" id="flip-right"></div>
     <canvas id="pdf-render"></canvas>
   </div>
 
+  <!-- کنترل‌ها -->
   <div id="controls">
-    <span>صفحه: <span id="page-num"></span> / <span id="page-count"></span></span>
+    صفحه: <span id="page-num"></span> / <span id="page-count"></span>
     <br>
     <button id="go-first">صفحه اول</button>
   </div>
@@ -269,7 +229,7 @@
         });
       });
     }
-
+	  
     window.addEventListener('resize', () => {
       if (!pdfDoc) return;
       renderPage(pageNum);
@@ -317,8 +277,14 @@ document.getElementById('flip-right').addEventListener('click', () => {
     renderPage(pageNum);
   }
 });
+ document.getElementById('go-first').addEventListener('click', () => {
+   if (!pdfDoc) return;
+      pageNum = 1;
+      renderPage(pageNum);
+    });
   </script>
 
 </body>
 </html>
+
 
