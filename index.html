@@ -244,7 +244,7 @@
 
     pdfjsLib.getDocument(url).promise.then(pdf => {
       pdfDoc = pdf;
-      pageCount = 48;
+      pageCount = 55;
       document.getElementById('page-count').textContent = pageCount;
       renderPage(pageNum);
     });
@@ -311,5 +311,6 @@ document.getElementById('go-first').addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
