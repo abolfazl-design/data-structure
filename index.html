@@ -317,8 +317,14 @@ document.getElementById('flip-right').addEventListener('click', () => {
     renderPage(pageNum);
   }
 });
+document.getElementById('go-first').addEventListener('click', () => {
+   if (!pdfDoc) return;
+      pageNum = 1;
+      renderPage(pageNum);
+    });
   </script>
 
 </body>
 </html>
+
 
